@@ -1,0 +1,266 @@
+swagger: "2.0"
+info:
+  title: beego Test API
+  description: beego has a very cool tools to autogenerate documents for your API
+  version: 1.0.0
+  termsOfService: http://beego.me/
+  contact:
+    email: astaxie@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+basePath: /v1
+paths:
+  /alastria/:
+    get:
+      tags:
+      - alastria
+      description: get result of a call to a view function
+      operationId: AlastriaController.CallContract
+      parameters:
+      - in: path
+        name: call
+        description: The call to the contract
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.ResponseCallGet'
+        "403":
+          description: response.Response.Code is 403
+  /alastria/identity:
+    post:
+      tags:
+      - alastria
+      description: For identity creation, you need call with a jwt token in authorization
+        header.
+      operationId: AlastriaController.Identity_creation
+      parameters:
+      - in: body
+        name: body
+        description: Transaction for IdentityManager call, Alastria Token and the
+          Subject public key.
+        required: true
+        schema:
+          $ref: '#/definitions/models.IdentityCreation'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.ResponseIdentityCreation'
+        "403":
+          description: response.Response.Code is 403
+  /alastria/pubkey:
+    post:
+      tags:
+      - alastria
+      description: Set or update the public key to an alastria id
+      operationId: AlastriaController.SetPubKey
+      parameters:
+      - in: body
+        name: body
+        description: body for Alastria content
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdatePK'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: response.Response.Code is 403
+  /alastria/pubkey/{alastriaId}:
+    get:
+      tags:
+      - alastria
+      description: Get the public key of an user with alastria_id.
+      operationId: AlastriaController.GetPubKey
+      parameters:
+      - in: path
+        name: alastriaId
+        description: The address of the alastria id user.
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.ResponsePubKey'
+        "403":
+          description: response.Response.Code is 403
+  /alastria/raw:
+    post:
+      tags:
+      - alastria
+      description: Send a raw transaction.
+      operationId: AlastriaController.SendRawTransaction
+      parameters:
+      - in: body
+        name: body
+        description: Contains a RawTransaction.
+        required: true
+        schema:
+          $ref: '#/definitions/models.SendRawTransaction'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.ResponseSendRawTransaction'
+        "403":
+          description: response.Response.Code is 403
+definitions:
+  .ResponseWriter:
+    type: object
+  models.IdentityCreation:
+    title: IdentityCreation
+    type: object
+    properties:
+      alastria_token:
+        type: string
+      public_key:
+        type: string
+      transaction:
+        type: string
+  models.Response:
+    title: Response
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int64
+      error:
+        type: string
+  models.ResponseCallGet:
+    title: Response
+    type: object
+    properties:
+      application_error:
+        $ref: '#/definitions/remote_api.ApplicationError'
+      exception:
+        type: array
+        items:
+          type: string
+          format: byte
+      java_exception:
+        type: array
+        items:
+          type: string
+          format: byte
+      response:
+        type: string
+      rpc_error:
+        $ref: '#/definitions/remote_api.RpcError'
+  models.ResponseIdentityCreation:
+    title: Response
+    type: object
+    properties:
+      alastria_id:
+        type: string
+      application_error:
+        $ref: '#/definitions/remote_api.ApplicationError'
+      exception:
+        type: array
+        items:
+          type: string
+          format: byte
+      java_exception:
+        type: array
+        items:
+          type: string
+          format: byte
+      response:
+        type: array
+        items:
+          type: string
+          format: byte
+      rpc_error:
+        $ref: '#/definitions/remote_api.RpcError'
+  models.ResponsePubKey:
+    title: Response
+    type: object
+    properties:
+      application_error:
+        $ref: '#/definitions/remote_api.ApplicationError'
+      exception:
+        type: array
+        items:
+          type: string
+          format: byte
+      java_exception:
+        type: array
+        items:
+          type: string
+          format: byte
+      public_key:
+        type: string
+      response:
+        type: array
+        items:
+          type: string
+          format: byte
+      rpc_error:
+        $ref: '#/definitions/remote_api.RpcError'
+  models.ResponseSendRawTransaction:
+    title: Response
+    type: object
+    properties:
+      application_error:
+        $ref: '#/definitions/remote_api.ApplicationError'
+      exception:
+        type: array
+        items:
+          type: string
+          format: byte
+      java_exception:
+        type: array
+        items:
+          type: string
+          format: byte
+      response:
+        type: array
+        items:
+          type: string
+          format: byte
+      rpc_error:
+        $ref: '#/definitions/remote_api.RpcError'
+      transaction:
+        type: string
+  models.SendRawTransaction:
+    title: SendRawTransaction
+    type: object
+    properties:
+      raw_transaction:
+        type: string
+  models.UpdatePK:
+    title: UpdatePK
+    type: object
+    properties:
+      alastria_id:
+        type: string
+      public_key:
+        type: string
+  remote_api.ApplicationError:
+    title: ApplicationError
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      detail:
+        type: string
+  remote_api.RpcError:
+    title: RpcError
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      detail:
+        type: string
+tags:
+- name: alastria
+  description: |
+    Operations about Alastrias
